@@ -6,7 +6,6 @@
 #include <fstream>
 #include <algorithm>
 #include <sys/stat.h>
-#include <iostream>
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_internal.h"
@@ -95,9 +94,7 @@ bool FileNode(const char* label, ImTextureID icon) {
 	return ret;
 }
 bool PathBox(const char* label, std::filesystem::path& path, char* pathBuffer, ImVec2 size_arg) {
-	std::cout << "testy1" << std::endl;
 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-	std::cout << "testy2" << std::endl;
 	if (window->SkipItems)
 		return false;
 	bool ret = false;

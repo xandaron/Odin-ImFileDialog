@@ -14,5 +14,3 @@ where /Q cl.exe || (
 
 cl /EHsc /c .\c_wrapper.cpp .\ImFileDialog\ImFileDialog.cpp /std:c++17 /I"./imgui/imgui.h" /I"./imgui/imgui_internal.h" /I"./stb_image/stb_image.h" /link AdvAPI32.lib
 lib /OUT:ImFileDialog.lib ImFileDialog.obj c_wrapper.obj
-
-pause

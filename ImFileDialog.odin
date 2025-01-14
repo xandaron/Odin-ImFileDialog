@@ -5,9 +5,13 @@ import "core:c"
 when ODIN_OS == .Windows {
     @(require) foreign import advapi32 "system:advapi32.lib"
 	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_x64.lib"} else {foreign import lib "ImFileDialog_arm64.lib"}
-} else when ODIN_OS == .Linux {
-	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_x64.a"} else {foreign import lib "ImFileDialog_arm64.a"}
-} else when ODIN_OS == .Darwin {
+} else {
+	when ODIN_OS == .Linux {
+		@(require) foreign import stdcpp "system:stdc++"
+	}
+	else ODIN_OS == .Darwin {
+		@(require) foreign import stdcpp "system:c++"
+	}
 	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_x64.a"} else {foreign import lib "ImFileDialog_arm64.a"}
 }
 

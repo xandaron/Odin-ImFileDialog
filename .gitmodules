@@ -1,0 +1,9 @@
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+	shallow = true
+[submodule "ImFileDialog"]
+	path = ImFileDialog
+	url = https://github.com/dfranx/ImFileDialog.git
+	shallow = true

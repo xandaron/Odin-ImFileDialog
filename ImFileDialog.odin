@@ -4,52 +4,49 @@ import "core:c"
 
 when ODIN_OS == .Windows {
     @(require) foreign import advapi32 "system:advapi32.lib"
-	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_x64.lib"} else {foreign import lib "ImFileDialog_arm64.lib"}
-} else {
-	when ODIN_OS == .Linux {
-		@(require) foreign import stdcpp "system:stdc++"
-	}
-	else ODIN_OS == .Darwin {
-		@(require) foreign import stdcpp "system:c++"
-	}
-	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_x64.a"} else {foreign import lib "ImFileDialog_arm64.a"}
+	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_windows_x64.lib"} else {foreign import lib "ImFileDialog_windows_arm64.lib"}
+} else when ODIN_OS == .Linux {
+	@(require) foreign import stdcpp "system:stdc++"
+	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_linux_x64.a"} else {foreign import lib "ImFileDialog_linux_arm64.a"}
 }
-
-FileDialog :: distinct rawptr
+else when ODIN_OS == .Darwin {
+	@(require) foreign import stdcpp "system:c++"
+	when ODIN_ARCH == .amd64 {foreign import lib "ImFileDialog_mac_x64.a"} else {foreign import lib "ImFileDialog_mac_arm64.a"}
+}
 
 CreateTexture :: #type proc "system" (data: ^c.uint8_t, width, height: c.int, format: c.char) -> rawptr
 DeleteTexture :: #type proc "system" (imagePtr: rawptr)
 
 @(default_calling_convention = "system")
-@(link_prefix = "file_dialog_")
+@(link_prefix = "FileDialog")
 foreign lib {
 	// Create a new FileDialog instance
-	create :: proc(create: CreateTexture, destroy: DeleteTexture) -> FileDialog ---
+	Init :: proc(create: CreateTexture, destroy: DeleteTexture) ---
 
 	// Destroy a FileDialog instance
-	destroy :: proc(dlg: FileDialog) ---
+	Shutdown :: proc() ---
 
-	save :: proc(dlg: FileDialog, key, title, filter, starting_dir: cstring) -> c.bool ---
+	Save :: proc(key, title, filter, starting_dir: cstring) -> c.bool ---
 
-	open :: proc(dlg: FileDialog, key, title, filter: cstring, is_multiselect: c.bool, starting_dir: cstring) -> c.bool ---
+	Open :: proc(key, title, filter: cstring, is_multiselect: c.bool, starting_dir: cstring) -> c.bool ---
 
-	is_done :: proc(dlg: FileDialog, key: cstring) -> c.bool ---
+	IsDone :: proc(key: cstring) -> c.bool ---
 
-	has_result :: proc(dlg: FileDialog) -> c.bool ---
+	HasResult :: proc() -> c.bool ---
 
-	get_result :: proc(dlg: FileDialog) -> cstring ---
+	GetResult :: proc() -> cstring ---
 
-	get_results :: proc(dlg: FileDialog, count: ^c.int) -> [^]cstring ---
+	GetResults :: proc(count: ^c.int) -> [^]cstring ---
 
-	close :: proc(dlg: FileDialog) ---
+	Close :: proc() ---
 
-	remove_favorite :: proc(dlg: FileDialog, path: cstring) ---
+	RemoveFavorite :: proc(path: cstring) ---
 
-	add_favorite :: proc(dlg: FileDialog, path: cstring) ---
+	AddFavorite :: proc(path: cstring) ---
 
-	get_favorites :: proc(dlg: FileDialog, count: ^c.int) -> [^]cstring ---
+	GetFavorites :: proc(count: ^c.int) -> [^]cstring ---
 
-	set_zoom :: proc(dlg: FileDialog, zoom: c.float) ---
+	SetZoom :: proc(zoom: c.float) ---
 
-	get_zoom :: proc(dlg: FileDialog) -> c.float ---
+	GetZoom :: proc() -> c.float ---
 }

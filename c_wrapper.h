@@ -2,6 +2,8 @@
 
 #ifdef __cplusplus
 extern "C" {
+#else
+typedef struct FileDialog;
 #endif
 
 // Typedefs for the function pointers
@@ -10,62 +12,62 @@ typedef void (*DeleteTextureFunc)(void*);
 
 // FileDialog();
 // Create a new FileDialog instance
-FileDialog* file_dialog_create(CreateTextureFunc create, DeleteTextureFunc destroy);
+void FileDialogInit(CreateTextureFunc create, DeleteTextureFunc destroy);
 
 // ~FileDialog();
 // Destroy a FileDialog instance
-void file_dialog_destroy(FileDialog* dlg);
+void FileDialogShutdown();
 
 // bool Save(const std::string& key, const std::string& title, const std::string& filter, const std::string& startingDir = "");
 // C wrapper for FileDialog::Save
-bool file_dialog_save(FileDialog* dlg, const char* key, const char* title, const char* filter, const char* starting_dir);
+bool FileDialogSave(const char* key, const char* title, const char* filter, const char* starting_dir);
 
 // bool Open(const std::string& key, const std::string& title, const std::string& filter, bool isMultiselect = false, const std::string& startingDir = "");
 // C wrapper for FileDialog::Open
-bool file_dialog_open(FileDialog* dlg, const char* key, const char* title, const char* filter, bool is_multiselect, const char* starting_dir);
+bool FileDialogOpen(const char* key, const char* title, const char* filter, bool is_multiselect, const char* starting_dir);
 
 // bool IsDone(const std::string& key);
 // C wrapper for FileDialog::IsDone
-bool file_dialog_is_done(FileDialog* dlg, const char* key);
+bool FileDialogIsDone(const char* key);
 
 // inline bool HasResult() { return m_result.size(); }
 // C wrapper for FileDialog::HasResult
-bool file_dialog_has_result(FileDialog* dlg);
+bool FileDialogHasResult();
 
 // inline const std::filesystem::path& GetResult() { return m_result[0]; }
 // C wrapper for FileDialog::GetResult (single result)
-const char* file_dialog_get_result(FileDialog* dlg);
+const char* FileDialogGetResult();
 
 // inline const std::vector<std::filesystem::path>& GetResults() { return m_result; }
 // C wrapper for FileDialog::GetResults (multi-select)
-char** file_dialog_get_results(FileDialog* dlg, int* count);
+char** FileDialogGetResults(int* count);
 
 // void Close();
 // C wrapper for FileDialog::Close
-void file_dialog_close(FileDialog* dlg);
+void FileDialogClose();
 
 // void RemoveFavorite(const std::string& path);
 // Remove a favorite path
-void file_dialog_remove_favorite(FileDialog* dlg, const char* path);
+void FileDialogRemoveFavorite(const char* path);
 
 // void AddFavorite(const std::string& path);
 // Add a favorite path
-void file_dialog_add_favorite(FileDialog* dlg, const char* path);
+void FileDialogAddFavorite(const char* path);
 
 // inline const std::vector<std::string>& GetFavorites() { return m_favorites; }
 // C wrapper for FileDialog::GetFavorites
-char** file_dialog_get_favorites(FileDialog* dlg, int* count);
+char** FileDialogGetFavorites(int* count);
 
 // inline void SetZoom(float z) { 
 //     m_zoom = std::min<float>(25.0f, std::max<float>(1.0f, z)); 
 //     m_refreshIconPreview();
 // }
 // C wrapper for FileDialog::SetZoom
-void file_dialog_set_zoom(FileDialog* dlg, float zoom);
+void FileDialogSetZoom(float zoom);
 
 // inline float GetZoom() { return m_zoom; }
 // C wrapper for FileDialog::GetZoom
-float file_dialog_get_zoom(FileDialog* dlg);
+float FileDialogGetZoom();
 
 #ifdef __cplusplus
 }

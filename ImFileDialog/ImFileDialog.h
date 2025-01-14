@@ -24,11 +24,11 @@ public:
 	FileDialog();
 	~FileDialog();
 
-	bool Save(const std::string& key, const std::string& title, const std::string& filter, const std::string& startingDir = "");
+	bool Save(std::string key, std::string title, std::string filter, std::string startingDir = "");
 
-	bool Open(const std::string& key, const std::string& title, const std::string& filter, bool isMultiselect = false, const std::string& startingDir = "");
+	bool Open(std::string key, std::string title, std::string filter, bool isMultiselect = false, std::string startingDir = "");
 
-	bool IsDone(const std::string& key);
+	bool IsDone(std::string key);
 
 	inline bool HasResult() { return m_result.size(); }
 	inline const std::filesystem::path& GetResult() { return m_result[0]; }
@@ -36,8 +36,8 @@ public:
 
 	void Close();
 
-	void RemoveFavorite(const std::string& path);
-	void AddFavorite(const std::string& path);
+	void RemoveFavorite(std::string path);
+	void AddFavorite(std::string path);
 	inline const std::vector<std::string>& GetFavorites() { return m_favorites; }
 
 	inline void SetZoom(float z) { 
@@ -58,7 +58,7 @@ public:
 		}
 #endif
 
-		FileTreeNode(const std::string& path) {
+		FileTreeNode(std::string path) {
 			Path = std::filesystem::u8path(path);
 			Read = false;
 		}
@@ -103,12 +103,12 @@ private:
 	void m_select(const std::filesystem::path& path, bool isCtrlDown = false);
 
 	std::vector<std::filesystem::path> m_result;
-	bool m_finalize(const std::string& filename = "");
+	bool m_finalize(std::string filename = "");
 
 	std::string m_filter;
 	std::vector<std::vector<std::string>> m_filterExtensions;
 	size_t m_filterSelection;
-	void m_parseFilter(const std::string& filter);
+	void m_parseFilter(std::string filter);
 
 	std::vector<int> m_iconIndices;
 	std::vector<std::string> m_iconFilepaths; // m_iconIndices[x] <-> m_iconFilepaths[x]

@@ -1,4 +1,4 @@
-#include "ImFileDialog.h"
+#include "ImFileDialog/ImFileDialog.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,17 +8,9 @@ extern "C" {
 typedef void* (*CreateTextureFunc)(uint8_t*, int, int, char);
 typedef void (*DeleteTextureFunc)(void*);
 
-// Setters for the function pointers
-void file_dialog_set_create_texture(CreateTextureFunc func);
-void file_dialog_set_delete_texture(DeleteTextureFunc func);
-
-// Instance()
-// Singleton instance
-FileDialog* file_dialog_instance();
-
 // FileDialog();
 // Create a new FileDialog instance
-FileDialog* file_dialog_create();
+FileDialog* file_dialog_create(CreateTextureFunc create, DeleteTextureFunc destroy);
 
 // ~FileDialog();
 // Destroy a FileDialog instance

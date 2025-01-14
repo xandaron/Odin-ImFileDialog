@@ -1,20 +1,11 @@
-#include "ImFileDialog_c_wrapper.h"
+#include "c_wrapper.h"
 #include <cstring>
 
-FileDialog* file_dialog_instance() {
-    return &FileDialog::Instance();
-}
-
-void file_dialog_set_create_texture(FileDialog* dlg, CreateTextureFunc func) {
-    dlg->CreateTexture = func;
-}
-
-void file_dialog_set_delete_texture(FileDialog* dlg, DeleteTextureFunc func) {
-    dlg->DeleteTexture = func;
-}
-
 FileDialog* file_dialog_create(CreateTextureFunc create, DeleteTextureFunc destroy) {
-    return new FileDialog;
+    FileDialog* dlg = new FileDialog();
+    dlg->CreateTexture = create;
+    dlg->DeleteTexture = destroy;
+    return dlg;
 }
 
 void file_dialog_destroy(FileDialog* dlg) {
@@ -27,7 +18,7 @@ bool file_dialog_save(FileDialog* dlg, const char* key, const char* title, const
 }
 
 bool file_dialog_open(FileDialog* dlg, const char* key, const char* title, const char* filter, bool is_multiselect, const char* starting_dir) {
-     std::string startingDirStr = starting_dir ? starting_dir : "";
+    static std::string startingDirStr = starting_dir ? starting_dir : "";
     return dlg->Open(key, title, filter, is_multiselect, startingDirStr);
 }
 
@@ -40,21 +31,20 @@ bool file_dialog_has_result(FileDialog* dlg) {
 }
 
 const char* file_dialog_get_result(FileDialog* dlg) {
-    //  Return a copy to avoid dangling pointers. Caller responsible for freeing.
-    std::string result = dlg->GetResult().string();
-    char* c_result = (char*)malloc(result.length() + 1);
-    strcpy(c_result, result.c_str());
-    return c_result;
+    std::string resultStr = dlg->GetResult().string();
+    char* result = new char[resultStr.length() + 1];
+    strcpy(result, resultStr.c_str());
+    return result;
 }
 
 char** file_dialog_get_results(FileDialog* dlg, int* count) {
     const std::vector<std::filesystem::path>& results = dlg->GetResults();
     *count = results.size();
-    char** c_results = (char**)malloc(results.size() * sizeof(char*));
+    char** c_results = new char*[*count];
     for (int i = 0; i < *count; ++i) {
-        std::string result = results[i].string();
-        c_results[i] = (char*)malloc(result.length() + 1);
-        strcpy(c_results[i], result.c_str());
+        std::string resultStr = results[i].string();
+        c_results[i] = new char[resultStr.length() + 1];
+        strcpy(c_results[i], resultStr.c_str());
     }
     return c_results;
 }

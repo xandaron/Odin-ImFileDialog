@@ -6,12 +6,13 @@
 #include <fstream>
 #include <algorithm>
 #include <sys/stat.h>
+#include <iostream>
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include <../imgui/imgui.h>
-#include <../imgui/imgui_internal.h>
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_internal.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+// #define STB_IMAGE_IMPLEMENTATION
+#include "../stb_image/stb_image.h"
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -94,10 +95,11 @@ bool FileNode(const char* label, ImTextureID icon) {
 	return ret;
 }
 bool PathBox(const char* label, std::filesystem::path& path, char* pathBuffer, ImVec2 size_arg) {
+	std::cout << "testy1" << std::endl;
 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	std::cout << "testy2" << std::endl;
 	if (window->SkipItems)
 		return false;
-
 	bool ret = false;
 	const ImGuiID id = window->GetID(label);
 	int* state = window->StateStorage.GetIntRef(id, 0);
@@ -219,7 +221,6 @@ bool PathBox(const char* label, std::filesystem::path& path, char* pathBuffer, I
 		if (!skipActiveCheck && !ImGui::IsItemActive())
 			*state &= 0b010;
 	}
-
 	return ret;
 }
 bool FavoriteButton(const char* label, bool isFavorite)
@@ -445,7 +446,7 @@ FileDialog::~FileDialog() {
 		m_clearTree(fn);
 	m_treeCache.clear();
 }
-bool FileDialog::Save(const std::string& key, const std::string& title, const std::string& filter, const std::string& startingDir)
+bool FileDialog::Save(std::string key, std::string title, std::string filter, std::string startingDir)
 {
 	if (!m_currentKey.empty())
 		return false;
@@ -469,7 +470,7 @@ bool FileDialog::Save(const std::string& key, const std::string& title, const st
 
 	return true;
 }
-bool FileDialog::Open(const std::string& key, const std::string& title, const std::string& filter, bool isMultiselect, const std::string& startingDir)
+bool FileDialog::Open(std::string key, std::string title, std::string filter, bool isMultiselect, std::string startingDir)
 {
 	if (!m_currentKey.empty())
 		return false;
@@ -493,7 +494,7 @@ bool FileDialog::Open(const std::string& key, const std::string& title, const st
 
 	return true;
 }
-bool FileDialog::IsDone(const std::string& key)
+bool FileDialog::IsDone(std::string key)
 {
 	bool isMe = m_currentKey == key;
 
@@ -534,7 +535,7 @@ void FileDialog::Close()
 	m_clearIcons();
 }
 
-void FileDialog::RemoveFavorite(const std::string& path)
+void FileDialog::RemoveFavorite(std::string path)
 {
 	auto itr = std::find(m_favorites.begin(), m_favorites.end(), m_currentDirectory.u8string());
 
@@ -552,7 +553,7 @@ void FileDialog::RemoveFavorite(const std::string& path)
 			break;
 		}
 }
-void FileDialog::AddFavorite(const std::string& path)
+void FileDialog::AddFavorite(std::string path)
 {
 	if (std::count(m_favorites.begin(), m_favorites.end(), path) > 0)
 		return;
@@ -605,7 +606,7 @@ void FileDialog::m_select(const std::filesystem::path& path, bool isCtrlDown)
 	}
 }
 
-bool FileDialog::m_finalize(const std::string& filename)
+bool FileDialog::m_finalize(std::string filename)
 {
 	bool hasResult = (!filename.empty() && m_type != IFD_DIALOG_DIRECTORY) || m_type == IFD_DIALOG_DIRECTORY;
 	
@@ -649,7 +650,7 @@ bool FileDialog::m_finalize(const std::string& filename)
 
 	return true;
 }
-void FileDialog::m_parseFilter(const std::string& filter)
+void FileDialog::m_parseFilter(std::string filter)
 {
 	m_filter = "";
 	m_filterExtensions.clear();
@@ -732,7 +733,7 @@ void* FileDialog::m_getIcon(const std::filesystem::path& path)
 	// check if icon is already loaded
 	auto itr = std::find(m_iconIndices.begin(), m_iconIndices.end(), fileInfo.iIcon);
 	if (itr != m_iconIndices.end()) {
-		const std::string& existingIconFilepath = m_iconFilepaths[itr - m_iconIndices.begin()];
+		std::string existingIconFilepath = m_iconFilepaths[itr - m_iconIndices.begin()];
 		m_icons[pathU8] = m_icons[existingIconFilepath];
 		return m_icons[pathU8];
 	}
@@ -777,7 +778,7 @@ void* FileDialog::m_getIcon(const std::filesystem::path& path)
 	// check if icon is already loaded
 	auto itr = std::find(m_iconIndices.begin(), m_iconIndices.end(), iconID);
 	if (itr != m_iconIndices.end()) {
-		const std::string& existingIconFilepath = m_iconFilepaths[itr - m_iconIndices.begin()];
+		std::string existingIconFilepath = m_iconFilepaths[itr - m_iconIndices.begin()];
 		m_icons[pathU8] = m_icons[existingIconFilepath];
 		return m_icons[pathU8];
 	}
@@ -1281,14 +1282,13 @@ void FileDialog::m_renderFileDialog()
 {
 	/***** TOP BAR *****/
 	bool noBackHistory = m_backHistory.empty(), noForwardHistory = m_forwardHistory.empty();
-	
+
 	ImGui::PushStyleColor(ImGuiCol_Button, 0);
 	if (noBackHistory) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	if (ImGui::ArrowButtonEx("##back", ImGuiDir_Left, ImVec2(GUI_ELEMENT_SIZE, GUI_ELEMENT_SIZE), m_backHistory.empty() * ImGuiItemFlags_Disabled)) {
 		std::filesystem::path newPath = m_backHistory.top();
 		m_backHistory.pop();
 		m_forwardHistory.push(m_currentDirectory);
-
 		m_setDirectory(newPath, false);
 	}
 	if (noBackHistory) ImGui::PopStyleVar();
@@ -1299,7 +1299,6 @@ void FileDialog::m_renderFileDialog()
 		std::filesystem::path newPath = m_forwardHistory.top();
 		m_forwardHistory.pop();
 		m_backHistory.push(m_currentDirectory);
-
 		m_setDirectory(newPath, false);
 	}
 	if (noForwardHistory) ImGui::PopStyleVar();
@@ -1311,9 +1310,15 @@ void FileDialog::m_renderFileDialog()
 	}
 	
 	std::filesystem::path curDirCopy = m_currentDirectory;
+
+	// *********************************
+	// ********** CRASH LINE ***********
+	// *********************************
+
 	if (PathBox("##pathbox", curDirCopy, m_pathBuffer, ImVec2(-250, GUI_ELEMENT_SIZE)))
 		m_setDirectory(curDirCopy);
 	ImGui::SameLine();
+
 	
 	if (FavoriteButton("##dirfav", std::count(m_favorites.begin(), m_favorites.end(), m_currentDirectory.u8string()))) {
 		if (std::count(m_favorites.begin(), m_favorites.end(), m_currentDirectory.u8string()))
@@ -1326,8 +1331,6 @@ void FileDialog::m_renderFileDialog()
 
 	if (ImGui::InputTextEx("##searchTB", "Search", m_searchBuffer, 128, ImVec2(-FLT_MIN, GUI_ELEMENT_SIZE), 0)) // TODO: no hardcoded literals
 		m_setDirectory(m_currentDirectory, false); // refresh
-
-
 
 	/***** CONTENT *****/
 	float bottomBarHeight = (GImGui->FontSize + ImGui::GetStyle().FramePadding.y + ImGui::GetStyle().ItemSpacing.y * 2.0f) * 2;
@@ -1358,7 +1361,6 @@ void FileDialog::m_renderFileDialog()
 
 		ImGui::EndTable();
 	}
-
 
 	
 	/***** BOTTOM BAR *****/

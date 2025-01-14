@@ -1,6 +1,7 @@
 package ImFileDialog
 
 import "core:c"
+import "vendor:stb/image"
 
 when ODIN_OS == .Windows {
     @(require) foreign import advapi32 "system:advapi32.lib"

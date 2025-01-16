@@ -31,23 +31,46 @@ bool FileDialogHasResult() {
     return dlg->HasResult();
 }
 
+static char* result;
+
 const char* FileDialogGetResult() {
     std::string resultStr = dlg->GetResult().string();
-    char* result = new char[resultStr.length() + 1];
+    result = new char[resultStr.length() + 1];
     strcpy(result, resultStr.c_str());
     return result;
 }
 
-char** FileDialogGetResults(int* count) {
-    const std::vector<std::filesystem::path>& results = dlg->GetResults();
-    *count = results.size();
-    char** c_results = new char*[*count];
-    for (int i = 0; i < *count; ++i) {
-        std::string resultStr = results[i].string();
-        c_results[i] = new char[resultStr.length() + 1];
-        strcpy(c_results[i], resultStr.c_str());
+void FileDialogFreeResult() {
+    if (result != NULL) {
+        free(result);
     }
-    return c_results;
+}
+
+static int strCount;
+static char** results;
+
+char** FileDialogGetResults(int* count) {
+    const std::vector<std::filesystem::path>& resultsStrs = dlg->GetResults();
+    strCount = resultsStrs.size();
+    *count = strCount;
+    char** results = new char*[strCount];
+    for (int i = 0; i < strCount; i++) {
+        std::string resultStr = resultsStrs[i].string();
+        results[i] = new char[resultStr.length() + 1];
+        strcpy(results[i], resultStr.c_str());
+    }
+    return results;
+}
+
+void FileDialogFreeResults() {
+    if (results != NULL) {
+        for (int i = 0; i < strCount; i++) {
+            if (results[i] != NULL) {
+                free(results[i]);
+            }
+        }
+        free(results);
+    }
 }
 
 void FileDialogClose() {

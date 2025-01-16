@@ -38,9 +38,13 @@ bool FileDialogHasResult();
 // C wrapper for FileDialog::GetResult (single result)
 const char* FileDialogGetResult();
 
+void FileDialogFreeResult();
+
 // inline const std::vector<std::filesystem::path>& GetResults() { return m_result; }
 // C wrapper for FileDialog::GetResults (multi-select)
 char** FileDialogGetResults(int* count);
+
+void FileDialogFreeResults();
 
 // void Close();
 // C wrapper for FileDialog::Close
